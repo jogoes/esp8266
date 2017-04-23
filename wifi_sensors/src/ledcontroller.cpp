@@ -1,6 +1,5 @@
 #include "ledcontroller.h"
 
-#include "fileutils.h"
 #include "template.h"
 
 #include <Arduino.h>
@@ -29,12 +28,12 @@ LedController::createResponse(int val) {
     status = (val)?"on":"off";
   }
 
-  String ledTemplate = FileUtils::readFileByName("led");
+  String ledTemplate = Template::getTemplate("led");
   std::map<String, String> ledModel;
   ledModel["LEDSTATUS"] = status;
   String ledContent = Template::apply(ledTemplate, ledModel);
 
-  String indexTemplate = FileUtils::readFileByName("index");
+  String indexTemplate = Template::getTemplate("index");
   std::map<String, String> contentModel;
   contentModel["CONTENT"] = ledContent;
   return Template::apply(indexTemplate, contentModel);

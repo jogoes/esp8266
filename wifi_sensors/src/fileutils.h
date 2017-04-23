@@ -4,7 +4,6 @@
 #include "properties.h"
 
 #include "WString.h"
-#include <vector>
 
 class FileUtils {
 public:

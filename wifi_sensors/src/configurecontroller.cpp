@@ -1,6 +1,5 @@
 #include "configurecontroller.h"
 
-#include <Arduino.h>
 #include "properties.h"
 
 #include <ESP8266WebServer.h>

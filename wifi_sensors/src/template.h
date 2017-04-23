@@ -1,7 +1,10 @@
 #ifndef _TEMPLATE_H_
 #define _TEMPLATE_H_
 
+#include "fileutils.h"
+
 #include <map>
+
 
 class Template {
 
@@ -15,6 +18,10 @@ public:
       c.replace("%" + key + "%", value);
     }
     return c;
+  }
+
+  static String getTemplate(const String& templateName) {
+    return FileUtils::readFileByName(templateName);
   }
 };
 

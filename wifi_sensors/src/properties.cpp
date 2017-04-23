@@ -13,8 +13,8 @@ Properties::write(const String& path, std::vector<Property>& properties) {
   }
 
   String config = "";
-  for(auto i = properties.begin(); i != properties.end(); i++) {
-    config += (*i).getName() + "=" + (*i).getValue();
+  for(auto property = properties.begin(); property != properties.end(); property++) {
+    config += property->getName() + "=" + property->getValue();
     config += "\n";
   }
 
@@ -41,9 +41,10 @@ Properties::read(const String& path, std::vector<Property>& properties) {
       int idx = propValue.indexOf('=');
       if(idx >= 0) {
         String name = propValue.substring(0, idx);
+        name.trim();
         String value = propValue.substring(idx);
-        Property prop(name, value);
-        properties.push_back(prop);
+        value.trim();
+        properties.push_back(Property(name, value));
         count++;
       }
     }

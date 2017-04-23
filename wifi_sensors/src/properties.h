@@ -18,8 +18,8 @@ public:
   }
 
 public:
-  const String& getName() { return m_name; }
-  const String& getValue() { return m_value; }
+  const String& getName() const { return m_name; }
+  const String& getValue() const { return m_value; }
 };
 
 class Properties {

@@ -1,7 +1,6 @@
 #include "dhtcontroller.h"
 
 #include "DHT.h"
-#include "fileutils.h"
 #include "template.h"
 
 #include <map>
@@ -25,10 +24,10 @@ DhtController::onValues() {
   std::map<String, String> sensorsModel;
   sensorsModel["DHTTEMPERATURE"] = temperature;
   sensorsModel["DHTHUMIDITY"] = humidity;
-  String dhtTemplate = FileUtils::readFileByName("dht");
+  String dhtTemplate = Template::getTemplate("dht");
   String dhtContent = Template::apply(dhtTemplate, sensorsModel);
 
-  String indexTemplate = FileUtils::readFileByName("index");
+  String indexTemplate = Template::getTemplate("index");
 
   std::map<String, String> model;
   model["CONTENT"] = dhtContent;

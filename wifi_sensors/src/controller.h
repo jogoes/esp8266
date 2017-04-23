@@ -6,9 +6,6 @@ class String;
 
 class Controller {
 
-public:
-  typedef void(Controller::*HandlerFunction)(void);
-
 protected:
   ESP8266WebServer& m_server;
 
