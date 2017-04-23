@@ -1,5 +1,6 @@
 #include "ledcontroller.h"
 #include "dhtcontroller.h"
+#include "configurecontroller.h"
 
 #include "fileutils.h"
 
@@ -28,6 +29,8 @@ DHT dht(DHTPIN, DHTTYPE);
 
 DhtController dhtController(server, dht);
 
+ConfigureController configureController(server);
+
 const char *ssid = "ESPServer";
 const char *password = "simpleandeasy";
 
@@ -51,11 +54,16 @@ void handleIndex() {
   server.send(200, "text/html", response);
 }
 
+void handleConfigure() {
+  configureController.onConfigure();
+}
+
 void configureHandlers() {
   server.on("/", handleIndex);
-	server.on("/led/0", handleLed0);
+  server.on("/led/0", handleLed0);
   server.on("/led/1", handleLed1);
   server.on("/read", handleRead);
+  server.on("/configure", handleConfigure);
 }
 
 void setup() {
@@ -70,6 +78,10 @@ void setup() {
   while(dir.next()) {
     Serial.println(dir.fileName());
   }
+
+  std::vector<Property> properties;
+  int result = FileUtils::readProperties("/config.properties", properties);
+  Serial.println("properties read: " + result);
 
   Serial.println("initializing DHT...");
   dht.begin();
