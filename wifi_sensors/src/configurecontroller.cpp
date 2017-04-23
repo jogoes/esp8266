@@ -1,7 +1,7 @@
 #include "configurecontroller.h"
 
 #include <Arduino.h>
-#include "fileutils.h"
+#include "properties.h"
 
 #include <ESP8266WebServer.h>
 
@@ -11,13 +11,13 @@
 
 void
 ConfigureController::onConfigure() {
-  String ssid = m_server.arg("ssid");
-  String password = m_server.arg("password");
-
   std::vector<Property> props;
-  props.push_back(Property("ssid", ssid));
-  props.push_back(Property("password", password));
+  for(int i = 0; i < m_server.args(); i++) {
+    String name = m_server.argName(i);
+    String value = m_server.arg(i);
+    props.push_back(Property(name, value));
+  }
 
-  FileUtils::writeProperties("/config.properties", props);
-  ok("configuration successful.");
+  Properties::write("/config.properties", props);
+  ok("Configuration successful, " + String(props.size()) + " properties have been added.");
 }

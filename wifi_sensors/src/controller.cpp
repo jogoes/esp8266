@@ -8,7 +8,7 @@
 void
 Controller::ok(const String& response)
 {
- m_server.send(200, "text/html", response);
+  m_server.send(200, "text/html", response);
 }
 
 String

@@ -1,8 +1,11 @@
 #include "ledcontroller.h"
 
 #include "fileutils.h"
+#include "template.h"
 
 #include <Arduino.h>
+
+#include <map>
 
 void
 LedController::onLedOff() {
@@ -18,20 +21,21 @@ LedController::onLedOn() {
   ok(response);
 }
 
-
 String
 LedController::createResponse(int val) {
-  // If we're setting the LED, print out a message saying we did
   String status = "unknown";
   if (val >= 0)
   {
     status = (val)?"on":"off";
   }
 
-  String content = FileUtils::readFileByName("led");
-  content.replace("%LEDSTATUS%", status);
+  String ledTemplate = FileUtils::readFileByName("led");
+  std::map<String, String> ledModel;
+  ledModel["LEDSTATUS"] = status;
+  String ledContent = Template::apply(ledTemplate, ledModel);
 
-  String response = FileUtils::readFileByName("index");
-  response.replace("%CONTENT%", content);
-  return response;
+  String indexTemplate = FileUtils::readFileByName("index");
+  std::map<String, String> contentModel;
+  contentModel["CONTENT"] = ledContent;
+  return Template::apply(indexTemplate, contentModel);
 }

@@ -3,6 +3,10 @@
 #include "configurecontroller.h"
 
 #include "fileutils.h"
+#include "properties.h"
+#include "template.h"
+
+#include <map>
 
 #include <ESP8266WiFi.h>
 
@@ -12,12 +16,7 @@
 #include "FS.h"
 #include "DHT.h"
 
-/////////////////////
-// Pin Definitions //
-/////////////////////
-const int LED_PIN = 14; // Thing's onboard, green LED
-const int ANALOG_PIN = A0; // The only analog pin on the Thing
-const int DIGITAL_PIN = 12; // Digital pin to be read
+const int LED_PIN = 14;
 
 ESP8266WebServer server(80);
 
@@ -49,8 +48,10 @@ void handleRead() {
 }
 
 void handleIndex() {
-  String response = FileUtils::readFile("/index.html");
-  response.replace("%CONTENT%", "");
+  String indexTemplate = FileUtils::readFile("/index.html");
+  std::map<String, String> model;
+  model["CONTENT"] = "";
+  String response = Template::apply(indexTemplate, model);
   server.send(200, "text/html", response);
 }
 
@@ -80,8 +81,9 @@ void setup() {
   }
 
   std::vector<Property> properties;
-  int result = FileUtils::readProperties("/config.properties", properties);
-  Serial.println("properties read: " + result);
+  int result = Properties::read("/config.properties", properties);
+  Serial.print("properties read: ");
+  Serial.println(result);
 
   Serial.println("initializing DHT...");
   dht.begin();
