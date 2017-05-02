@@ -1,9 +1,9 @@
 #include "indexcontroller.h"
 
-#include "fileutils.h"
+#include "utils/fileutils.h"
+#include "utils/networkutils.h"
 #include "template.h"
 #include "webserver.h"
-#include "networkutils.h"
 
 #include <WString.h>
 #include <map>

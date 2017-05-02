@@ -1,10 +1,8 @@
 #ifndef _WEBSERVER_H_
 #define _WEBSERVER_H_
 
-#include "WString.h"
 #include <vector>
-#include "properties.h"
-#include <functional>
+#include "utils/properties.h"
 
 class ESP8266WebServer;
 

@@ -1,6 +1,6 @@
 #include "thingspeak.h"
 
-#include "properties.h"
+#include "utils/properties.h"
 
 #include <ESP8266WiFi.h>
 

@@ -1,10 +1,10 @@
-#include "ledcontroller.h"
-#include "dhtcontroller.h"
-#include "configurecontroller.h"
-#include "indexcontroller.h"
+#include "controllers/ledcontroller.h"
+#include "controllers/dhtcontroller.h"
+#include "controllers/configurecontroller.h"
+#include "controllers/indexcontroller.h"
 
-#include "fileutils.h"
-#include "properties.h"
+#include "utils/fileutils.h"
+#include "utils/properties.h"
 #include "template.h"
 
 #include <map>

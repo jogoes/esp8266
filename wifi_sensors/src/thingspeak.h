@@ -1,7 +1,7 @@
 #ifndef _THINGS_SPEAK_H_
 #define _THINGS_SPEAK_H_
 
-#include "properties.h"
+#include "utils/properties.h"
 #include <WString.h>
 #include <vector>
 

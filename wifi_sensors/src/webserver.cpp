@@ -1,6 +1,6 @@
 #include "webserver.h"
 
-#include "properties.h"
+#include "utils/properties.h"
 
 #include <ESP8266WebServer.h>
 

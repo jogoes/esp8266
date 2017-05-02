@@ -1,6 +1,6 @@
 #include "configurecontroller.h"
 
-#include "properties.h"
+#include "utils/properties.h"
 
 #include <webserver.h>
 
