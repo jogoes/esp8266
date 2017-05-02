@@ -1,18 +1,16 @@
 #ifndef _CONTROLLER_H_
 #define _CONTROLLER_H_
 
-class ESP8266WebServer;
+class WebServer;
 class String;
 
 class Controller {
 
 protected:
-  ESP8266WebServer& m_server;
+  WebServer& m_server;
 
 public:
-  Controller(ESP8266WebServer& server) : m_server(server) {
-
-  }
+  Controller(WebServer& server) : m_server(server) { }
 
 public:
   void ok(const String& response);

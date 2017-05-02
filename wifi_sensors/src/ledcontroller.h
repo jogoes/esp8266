@@ -5,7 +5,7 @@
 
 #include "WString.h"
 
-class ESP8266WebServer;
+class WebServer;
 
 class LedController : public Controller {
 
@@ -13,7 +13,7 @@ private:
   int m_ledPin;
 
   public:
-     LedController(ESP8266WebServer& server, int ledPin) : Controller(server), m_ledPin(ledPin) {
+     LedController(WebServer& server, int ledPin) : Controller(server), m_ledPin(ledPin) {
      }
 
   public:

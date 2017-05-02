@@ -1,6 +1,7 @@
 #include "ledcontroller.h"
 #include "dhtcontroller.h"
 #include "configurecontroller.h"
+#include "indexcontroller.h"
 
 #include "fileutils.h"
 #include "properties.h"
@@ -8,30 +9,28 @@
 
 #include <map>
 
-#include <ESP8266WiFi.h>
-
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-
-#include "FS.h"
 #include "DHT.h"
+#include "thingspeak.h"
+#include "FS.h"
+#include "webserver.h"
+
+#include "ESP8266WebServer.h"
 
 const int LED_PIN = 14;
 
-ESP8266WebServer server(80);
+DHT dht(13, DHT11);
+
+ESP8266WebServer espServer(80);
+
+WebServer server(espServer);
 
 LedController ledController(server, LED_PIN);
-
-#define DHTTYPE DHT11
-const int DHTPIN = 13;
-DHT dht(DHTPIN, DHTTYPE);
 
 DhtController dhtController(server, dht);
 
 ConfigureController configureController(server);
 
-const char *ssid = "ESPServer";
-const char *password = "simpleandeasy";
+IndexController indexController(server);
 
 String createResponse(int val);
 
@@ -48,61 +47,86 @@ void handleRead() {
 }
 
 void handleIndex() {
-  String indexTemplate = FileUtils::readFile("/index.html");
-  std::map<String, String> model;
-  model["CONTENT"] = "";
-  String response = Template::apply(indexTemplate, model);
-  server.send(200, "text/html", response);
+  indexController.onIndex();
+}
+
+void handleScanNetwork() {
+  indexController.onScan();
 }
 
 void handleConfigure() {
   configureController.onConfigure();
 }
 
-void configureHandlers() {
-  server.on("/", handleIndex);
-  server.on("/led/0", handleLed0);
-  server.on("/led/1", handleLed1);
-  server.on("/read", handleRead);
-  server.on("/configure", handleConfigure);
+void handleConfigureThingSpeak() {
+  configureController.onConfigureThingSpeak();
 }
 
-void setup() {
-  pinMode(LED_PIN, OUTPUT);
+void configureHandlers() {
+  ESP8266WebServer& espServer = server.getServer();
 
-	delay(1000);
+  espServer.on("/", handleIndex);
+  espServer.on("/scan", handleScanNetwork);
+  espServer.on("/led/0", handleLed0);
+  espServer.on("/led/1", handleLed1);
+  espServer.on("/read", handleRead);
+  espServer.on("/configure", handleConfigure);
+  espServer.on("/configurethingspeak", handleConfigureThingSpeak);
+}
+
+ThingSpeak thingSpeak;
+
+unsigned long lastUpdate = millis();
+
+void setup() {
+  delay(1000);
 	Serial.begin(115200);
 
-  Serial.println("files found:");
-  SPIFFS.begin();
-  Dir dir = SPIFFS.openDir("/");
-  while(dir.next()) {
-    Serial.println(dir.fileName());
-  }
-
-  std::vector<Property> properties;
-  int result = Properties::read("/config.properties", properties);
-  Serial.print("properties read: ");
-  Serial.println(result);
+  pinMode(LED_PIN, OUTPUT);
 
   Serial.println("initializing DHT...");
   dht.begin();
   Serial.println("done.");
 
-	Serial.println();
-	Serial.println("Configuring access point...");
-	/* You can remove the password parameter if you want the AP to be open. */
-	WiFi.softAP(ssid/*, password*/);
+  Serial.println("checking filesystem...");
+  SPIFFS.begin();
+  Serial.println("files found:");
+  Dir dir = SPIFFS.openDir("/");
+  while(dir.next()) {
+    Serial.println(dir.fileName());
+  }
+  Serial.println("done.");
 
-	IPAddress myIP = WiFi.softAPIP();
-	Serial.print("AP IP address: ");
-	Serial.println(myIP);
+  Serial.println("reading config.properties...");
+  std::vector<Property> properties;
+  int result = Properties::read("/config.properties", properties);
+  Serial.print("properties read: ");
+  Serial.println(result);
+  Serial.println("done.");
+
   configureHandlers();
-	server.begin();
-	Serial.println("HTTP server started");
+  server.start(properties);
+
+  // for now don't send data to ThingSpeak
+  thingSpeak.disable();
 }
 
 void loop()
 {
-  server.handleClient();
+  server.getServer().handleClient();
+
+  if(thingSpeak.isEnabled()) {
+    unsigned long current = millis();
+    if(current - lastUpdate > 10000) {
+      lastUpdate = current;
+      float h = dht.readHumidity();
+      float t = dht.readTemperature();
+      std::vector<Property> fields;
+      String temperature = String(t,0);
+      String humidity = String(h,0);
+      fields.push_back(Property("field2", humidity));
+      fields.push_back(Property("field1", temperature));
+      thingSpeak.updateFields(fields);
+    }
+  }
 }

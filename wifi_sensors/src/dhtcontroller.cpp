@@ -5,6 +5,9 @@
 
 #include <map>
 
+DhtController::DhtController(WebServer& server, DHT& dht) : Controller(server), m_dht(dht) {
+}
+
 void
 DhtController::onValues() {
 

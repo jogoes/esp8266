@@ -42,7 +42,7 @@ Properties::read(const String& path, std::vector<Property>& properties) {
       if(idx >= 0) {
         String name = propValue.substring(0, idx);
         name.trim();
-        String value = propValue.substring(idx);
+        String value = propValue.substring(idx + 1);
         value.trim();
         properties.push_back(Property(name, value));
         count++;
@@ -52,4 +52,20 @@ Properties::read(const String& path, std::vector<Property>& properties) {
   }
   f.close();
   return count;
+}
+
+String
+Properties::getValue(const String& name, const std::vector<Property>& properties) {
+  String value = "";
+  for(auto property = properties.begin(); property != properties.end(); property++) {
+    if(property->getName() == name) {
+      value = property->getValue();
+    }
+  }
+  return value;
+}
+
+String
+Properties::getValue(const char* name, const std::vector<Property>& properties) {
+  return getValue(String(name), properties);
 }

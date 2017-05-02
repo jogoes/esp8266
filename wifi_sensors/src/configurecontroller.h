@@ -3,16 +3,20 @@
 
 #include "controller.h"
 
-class ESP8266WebServer;
+class WebServer;
 
 class ConfigureController : public Controller {
 
 public:
-  ConfigureController(ESP8266WebServer& server) : Controller(server) {
+  ConfigureController(WebServer& server) : Controller(server) {
   }
 
 public:
   void onConfigure();
+  void onConfigureThingSpeak();
+
+private:
+  int writeProperties(const String& configName);
 };
 
 #endif

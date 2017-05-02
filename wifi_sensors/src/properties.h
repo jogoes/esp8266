@@ -27,6 +27,9 @@ public:
   static void write(const String& path, std::vector<Property>& properties);
 
   static int read(const String& path, std::vector<Property>& properties);
+
+  static String getValue(const String& name, const std::vector<Property>& properties);
+  static String getValue(const char* name, const std::vector<Property>& properties);
 };
 
 #endif

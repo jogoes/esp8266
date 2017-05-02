@@ -4,7 +4,7 @@
 #include "controller.h"
 
 class DHT;
-class ESP8266WebServer;
+class WebServer;
 
 class DhtController : public Controller {
 
@@ -12,9 +12,7 @@ private:
   DHT& m_dht;
 
 public:
-  DhtController(ESP8266WebServer& server, DHT& dht) : Controller(server), m_dht(dht) {
-
-  }
+  DhtController(WebServer& server, DHT& dht);
 
 public:
   void onValues();

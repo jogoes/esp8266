@@ -2,21 +2,38 @@
 
 #include "properties.h"
 
-#include <ESP8266WebServer.h>
+#include <webserver.h>
 
 #include "WString.h"
 
 #include <vector>
 
-void
-ConfigureController::onConfigure() {
+#include "ESP8266WebServer.h"
+
+
+int
+ConfigureController::writeProperties(const String& configName) {
   std::vector<Property> props;
-  for(int i = 0; i < m_server.args(); i++) {
-    String name = m_server.argName(i);
-    String value = m_server.arg(i);
+  ESP8266WebServer& server = m_server.getServer();
+
+  for(int i = 0; i < server.args(); i++) {
+    String name = server.argName(i);
+    String value = server.arg(i);
     props.push_back(Property(name, value));
   }
 
-  Properties::write("/config.properties", props);
-  ok("Configuration successful, " + String(props.size()) + " properties have been added.");
+  Properties::write(String("/") + configName + ".properties", props);
+  return props.size();
+}
+
+void
+ConfigureController::onConfigure() {
+  int propsWritten = writeProperties("config");
+  ok("Configuration successful, " + String(propsWritten) + " properties have been added.");
+}
+
+void
+ConfigureController::onConfigureThingSpeak() {
+  int propsWritten = writeProperties("thingspeak");
+  ok("ThingSpeak configuration successful, " + String(propsWritten) + " properties have been added.");
 }
